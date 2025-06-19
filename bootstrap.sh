@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # bootstrap.sh - Install or update dotfiles from GitHub and symlink them
-# Usage: curl -s https://raw.githubusercontent.com/YOUR_USERNAME/dotfiles/main/bootstrap.sh | bash
+# Usage: curl -s https://raw.githubusercontent.com/ted209er/home-bootstrap/main/bootstrap.sh | bash
 
 set -e
 
-REPO="https://github.com/YOUR_USERNAME/dotfiles.git"
+REPO="https://github.com/ted209er/home-bootstrap.git"
 DOTFILES="$HOME/.dotfiles"
 
 # Check if Git is installed
