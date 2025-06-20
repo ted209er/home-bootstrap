@@ -15,19 +15,30 @@ if ! command -v git &> /dev/null; then
 fi
 
 # Clone the repo as a bare repo
+# A bare repo has no working directory (no actual files checked out),
+# Only contains the .git dir (version control metadate)
+# Used as a remote repo for dotfile management
 if [ ! -d "$DOTFILES" ]; then
   echo "Cloning dotfiles into bare repository..."
   git clone --bare "$REPO" "$DOTFILES"
 fi
 
 # Define alias for working with the bare repo
-alias dotfiles="git --git-dir=$DOTFILES --work-tree=$HOME"
+# Had to take this out as alias is getting set and called only within the scope of this script, so the alias hasn't been loaded and cannot be called.
+#alias dotfiles="git --git-dir=$DOTFILES --work-tree=$HOME"
+
+# Updating to create a variable to hold the git command
+
+GIT_CMD="git --git-dir=$DOTFILES --work-tree=$HOME"
+# Tells git that the working tree is actually $HOME, not where the repo lives ($HOME/.dotfiles)
+# This way I don't have a ~/.bashrc and a ~/dotfiles/.bashrc in the repo. the ~/.dotfiles version
+# controls the files in ~./bashrc.
 
 # Prevent untracked files from showing
 mkdir -p .config-backup
 
 echo "Checking out dotfiles..."
-dotfiles checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | while read -r file; do
+GIT_CMD checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | while read -r file; do
   mkdir -p "$(dirname ".config-backup/$file")"
   mv "$HOME/$file" ".config-backup/$file"
 done
