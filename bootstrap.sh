@@ -43,9 +43,9 @@ GIT_CMD checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | while read -r file;
   mv "$HOME/$file" ".config-backup/$file"
 done
 
-dotfiles checkout
+GIT_CMD checkout
 
-dotfiles config --local status.showUntrackedFiles no
+GIT_CMD config --local status.showUntrackedFiles no
 
 echo "✅ Dotfiles installed! Backup of previous files in ~/.config-backup"
 
