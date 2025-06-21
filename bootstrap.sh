@@ -38,14 +38,15 @@ GIT_CMD="git --git-dir=$DOTFILES --work-tree=$HOME"
 mkdir -p .config-backup
 
 echo "Checking out dotfiles..."
-GIT_CMD checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | while read -r file; do
+$GIT_CMD checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | while read -r file; do
+
   mkdir -p "$(dirname ".config-backup/$file")"
   mv "$HOME/$file" ".config-backup/$file"
 done
 
-GIT_CMD checkout
+$GIT_CMD checkout
 
-GIT_CMD config --local status.showUntrackedFiles no
+$GIT_CMD config --local status.showUntrackedFiles no
 
 echo "✅ Dotfiles installed! Backup of previous files in ~/.config-backup"
 
