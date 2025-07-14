@@ -51,7 +51,7 @@ $GIT_CMD config --local status.showUntrackedFiles no
 echo "✅ Dotfiles installed! Backup of previous files in ~/.config-backup"
 
 # Optional: install packages or tools here
-# sudo apt update && sudo apt install -y vim curl git tmux
+sudo apt update && sudo apt install -y vim curl git tmux
 
 # Optional: run host-specific setup
 # [[ "$HOSTNAME" == "rpi-monitor" ]] && ./scripts/rpi-setup.sh
