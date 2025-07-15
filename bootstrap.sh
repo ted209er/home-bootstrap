@@ -32,7 +32,7 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
 fi
 
 # Install plugins if they don't already exist
-[ ! -d "${ZSH_CUSTOM/plugins/zsh-autosuggestions" ] && git clone https://github.com/zsh-users/zsh-suggestions "${ZSH_CUSTOM}/plugins/zsh-autosuggestions"
+[ ! -d "${ZSH_CUSTOM}/plugins/zsh-autosuggestions" ] && git clone https://github.com/zsh-users/zsh-suggestions "${ZSH_CUSTOM}/plugins/zsh-autosuggestions"
 
 [ ! -d "${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting" ] && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting"
 
