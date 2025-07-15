@@ -7,6 +7,7 @@ set -e
 REPO_URL="git@github.com:ted209er/dotfiles_bootstrap.git"
 DOTFILES="$HOME/.dotfiles"
 BOOTSTRAP_DIR="$HOME/Repos/dotfiles_bootstrap"
+ZSH_CUSTOM="${HOME}/.oh-my-zsh/custom"
 
 # Install core packages
 echo "🔧 Installing required packages..."
@@ -29,6 +30,15 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "Installing oh-my-zsh..."
   RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
+
+# Install plugins if they don't already exist
+[ ! -d "${ZSH_CUSTOM/plugins/zsh-autosuggestions" ] && git clone https://github.com/zsh-users/zsh-suggestions "${ZSH_CUSTOM}/plugins/zsh-autosuggestions"
+
+[ ! -d "${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting" ] && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting"
+
+# Install powerlevel10k theme
+[ ! -d "${ZSH_CUSTOM}/themes/powerlevel10k" ] && git clone ---depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM}/themes/powerlevel10k"
+
 
 # Set zsh as default shell
 if ["$SHELL" != "$(which zsh)" ]; then
