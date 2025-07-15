@@ -24,6 +24,12 @@ echo "🔗 Setting up dotfile symlinks..."
 ln -sf "$BOOTSTRAP_DIR/.zshrc" "$HOME/.zshrc"
 ln -sf "$BOOTSTRAP_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 
+# Installing oh-my-zsh
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  echo "Installing oh-my-zsh..."
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
 # Set zsh as default shell
 if ["$SHELL" != "$(which zsh)" ]; then
   echo "💡 Setting Zsh as the default shell..."
