@@ -1,57 +1,39 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# bootstrap.sh - Install or update dotfiles from GitHub and symlink them
-# Usage: curl -s https://raw.githubusercontent.com/ted209er/home-bootstrap/main/bootstrap.sh | bash
 
 set -e
 
-REPO="https://github.com/ted209er/home-bootstrap.git"
+# Variables
+REPO_URL="https://github.com/ted209er/dotfiles_bootstrap.git"
 DOTFILES="$HOME/.dotfiles"
+BOOTSTRAP_DIR="$HOME/Repos/dotfiles_bootstrap"
 
-# Check if Git is installed
-if ! command -v git &> /dev/null; then
-  echo "Git is not installed. Please install Git first."
-  exit 1
+# Install core packages
+echo "🔧 Installing required packages..."
+sudo apt update
+sudo apt install -y zsh git curl tmux vim neofetch
+
+# Clone dotfiles repo if needed
+if [ ! -d "$BOOTSTRAP_DIR" ]; then
+  echo "📥 Cloning dotfiles repo..."
+  git clone "$REPO_URL" "$BOOTSTRAP_DIR"
 fi
 
-# Clone the repo as a bare repo
-# A bare repo has no working directory (no actual files checked out),
-# Only contains the .git dir (version control metadate)
-# Used as a remote repo for dotfile management
-if [ ! -d "$DOTFILES" ]; then
-  echo "Cloning dotfiles into bare repository..."
-  git clone --bare "$REPO" "$DOTFILES"
+# Symlink dotfiles
+echo "🔗 Setting up dotfile symlinks..."
+ln -sf "$BOOTSTRAP_DIR/.zshrc" "$HOME/.zshrc"
+ln -sf "$BOOTSTRAP_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
+
+# Set zsh as default shell
+if ["$SHELL" != "$(which zsh)" ]; then
+  echo "💡 Setting Zsh as the default shell..."
+  chsh -s "$(which zsh)"
 fi
 
-# Define alias for working with the bare repo
-# Had to take this out as alias is getting set and called only within the scope of this script, so the alias hasn't been loaded and cannot be called.
-#alias dotfiles="git --git-dir=$DOTFILES --work-tree=$HOME"
+# Display system info
+echo "🖥️ Running Neofetch:"
+neofetch || echo "⚠️ Neofetch not found."
 
-# Updating to create a variable to hold the git command
+echo "✅ Bootstrap complete. Please restart your terminal or run 'exec zsh' to start using Zsh."
 
-GIT_CMD="git --git-dir=$DOTFILES --work-tree=$HOME"
-# Tells git that the working tree is actually $HOME, not where the repo lives ($HOME/.dotfiles)
-# This way I don't have a ~/.bashrc and a ~/dotfiles/.bashrc in the repo. the ~/.dotfiles version
-# controls the files in ~./bashrc.
 
-# Prevent untracked files from showing
-mkdir -p .config-backup
-
-echo "Checking out dotfiles..."
-$GIT_CMD checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | while read -r file; do
-
-  mkdir -p "$(dirname ".config-backup/$file")"
-  mv "$HOME/$file" ".config-backup/$file"
-done
-
-$GIT_CMD checkout
-
-$GIT_CMD config --local status.showUntrackedFiles no
-
-echo "✅ Dotfiles installed! Backup of previous files in ~/.config-backup"
-
-# Optional: install packages or tools here
-sudo apt update && sudo apt install -y vim curl git tmux
-
-# Optional: run host-specific setup
-# [[ "$HOSTNAME" == "rpi-monitor" ]] && ./scripts/rpi-setup.sh
