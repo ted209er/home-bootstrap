@@ -4,7 +4,7 @@
 set -e
 
 # Variables
-REPO_URL="https://github.com/ted209er/dotfiles_bootstrap.git"
+REPO_URL="git@github.com:ted209er/dotfiles_bootstrap.git"
 DOTFILES="$HOME/.dotfiles"
 BOOTSTRAP_DIR="$HOME/Repos/dotfiles_bootstrap"
 
