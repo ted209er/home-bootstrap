@@ -80,7 +80,7 @@ else
 fi
 
 # Set zsh as default shell
-if ["$SHELL" != "$(which zsh)" ]; then
+if [ "$SHELL" != "$(which zsh)" ]; then
   echo "💡 Setting Zsh as the default shell..."
   chsh -s "$(which zsh)"
 fi
