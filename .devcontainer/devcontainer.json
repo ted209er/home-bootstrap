@@ -1,0 +1,28 @@
+{
+  "name": "home-bootstrap",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "workspaceFolder": "/workspaces/home-bootstrap",
+  "mounts": [
+    "source=${localEnv:HOME}/.config/gh,target=/home/ted209er/.config/gh,type=bind,consistency=cached"
+  ],
+  "postCreateCommand": "sudo bash .devcontainer/scripts/setup.sh",
+  "remoteUser": "ted209er",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      },
+      "extensions": [
+        "ms-vscode.remote-containers",
+        "GitHub.vscode-pull-request-github"
+      ]
+    }
+  }
+}

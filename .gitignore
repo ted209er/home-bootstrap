@@ -1,4 +1,12 @@
 venv/
+.venv/
 __pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
 *.log
-scripts/weather-alert/config.js
+
+# Weather alert runtime artifacts
+scripts/weather-alert/venv/
+scripts/weather-alert/weather_alert.log
