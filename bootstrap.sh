@@ -1,11 +1,9 @@
 #!/bin/bash
 
-
 set -e
 
 # Variables
 REPO_URL="git@github.com:ted209er/dotfiles_bootstrap.git"
-DOTFILES="$HOME/.dotfiles"
 BOOTSTRAP_DIR="$HOME/Repos/dotfiles_bootstrap"
 ZSH_CUSTOM="${HOME}/.oh-my-zsh/custom"
 
@@ -40,10 +38,12 @@ fi
 [ ! -d "${ZSH_CUSTOM}/themes/powerlevel10k" ] && git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM}/themes/powerlevel10k"
 
 
+ZSH_PATH="$(command -v zsh)"
+
 # Set zsh as default shell
-if ["$SHELL" != "$(which zsh)" ]; then
+if [ "$SHELL" != "$ZSH_PATH" ]; then
   echo "💡 Setting Zsh as the default shell..."
-  chsh -s "$(which zsh)"
+  chsh -s "$ZSH_PATH"
 fi
 
 # Display system info

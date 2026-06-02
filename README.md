@@ -22,3 +22,9 @@ The launcher creates the workspace when needed, adds standard folders for notes,
 findings, reports, screenshots, and data, then opens a five-pane tmux session.
 The session name is based on the workspace directory name, such as
 `bounty-test-bounty-1`.
+
+### Shell Script Quality
+
+Shell scripts should pass Bash syntax checks and ShellCheck. See
+`docs/shell_script_standards.md` for the repo's shell scripting conventions and
+validation commands.

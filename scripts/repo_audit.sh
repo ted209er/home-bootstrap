@@ -152,15 +152,15 @@ fi
 
 {
     printf '# Repo Audit\n\n'
-    printf -- '- Generated: `%s`\n' "$(date -Iseconds)"
-    printf -- '- Repos root: `%s`\n' "$repos_root"
-    printf -- '- Stale branch threshold: `%s days`\n\n' "$stale_days"
+    printf -- "- Generated: \`%s\`\n" "$(date -Iseconds)"
+    printf -- "- Repos root: \`%s\`\n" "$repos_root"
+    printf -- "- Stale branch threshold: \`%s days\`\n\n" "$stale_days"
 
     printf '| Repo | Path | Status | Branch | Upstream | Ahead/Behind | Stale Local Branches | README.md | AGENTS.md |\n'
     printf '| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n'
 
     if [ "${#repo_rows[@]}" -eq 0 ]; then
-        printf '| No repositories found | `%s` | - | - | - | - | - | - | - |\n' "$repos_root"
+        printf "| No repositories found | \`%s\` | - | - | - | - | - | - | - |\n" "$repos_root"
     else
         printf '%s\n' "${repo_rows[@]}"
     fi
