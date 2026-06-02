@@ -52,7 +52,9 @@ Preview the fuller development bootstrap without making changes:
 
 Both bootstrap scripts perform package installation and other host-level setup.
 Use `--help` to review supported options, and review the script body before
-running on a new machine.
+running on a new machine. They are intended to be repeatable: existing dotfile
+symlinks are checked before replacement, existing oh-my-zsh plugins are skipped,
+and Docker installation is skipped when Docker is already present.
 
 ### Repo Audit
 
@@ -103,7 +105,9 @@ scripts/weather-alert/install_weather_alert.sh --dry-run
 ```
 
 The cron installer mutates the user crontab and installs Python dependencies
-into `scripts/weather-alert/venv`. Use `--help` to review supported options.
+into `scripts/weather-alert/venv`. Repeated runs replace the managed weather
+alert cron entry instead of duplicating it. Use `--help` to review supported
+options.
 
 ### Shell Script Quality
 

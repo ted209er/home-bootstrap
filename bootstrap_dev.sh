@@ -33,6 +33,28 @@ run_cmd() {
   fi
 }
 
+ensure_symlink() {
+  local source=$1
+  local target=$2
+  local current_target
+
+  if [ -L "$target" ]; then
+    current_target="$(readlink "$target")"
+    if [ "$current_target" = "$source" ]; then
+      echo "Symlink already correct: $target -> $source"
+      return
+    fi
+
+    echo "Will replace symlink: $target currently points to $current_target"
+  elif [ -e "$target" ]; then
+    echo "Will replace existing path with symlink: $target"
+  else
+    echo "Will create symlink: $target -> $source"
+  fi
+
+  run_cmd ln -sfn "$source" "$target"
+}
+
 parse_args() {
   while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -79,11 +101,9 @@ else
 fi
 
 # Symlink dotfiles
-echo "Will create/update dotfile symlinks:"
-echo "  $HOME/.zshrc -> $BOOTSTRAP_DIR/.zshrc"
-echo "  $HOME/.p10k.zsh -> $BOOTSTRAP_DIR/.p10k.zsh"
-run_cmd ln -sf "$BOOTSTRAP_DIR/.zshrc" "$HOME/.zshrc"
-run_cmd ln -sf "$BOOTSTRAP_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
+echo "Checking dotfile symlinks..."
+ensure_symlink "$BOOTSTRAP_DIR/.zshrc" "$HOME/.zshrc"
+ensure_symlink "$BOOTSTRAP_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 
 # Installing oh-my-zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -124,10 +144,23 @@ if ! command -v docker >/dev/null 2>&1; then
 
   # Use Docker's convenience script for installation
   echo "Will download Docker install script from https://get.docker.com"
-  run_cmd curl -fsSL https://get.docker.com -o get-docker.sh
+  if [ "$DRY_RUN" = true ]; then
+    echo "+ docker_script=\$(mktemp)"
+    echo "+ curl -fsSL https://get.docker.com -o \"\$docker_script\""
+  else
+    docker_script="$(mktemp)"
+    trap 'rm -f "$docker_script"' EXIT
+    run_cmd curl -fsSL https://get.docker.com -o "$docker_script"
+  fi
   echo "Will run Docker install script with sudo."
-  run_cmd sudo sh get-docker.sh
-  run_cmd rm get-docker.sh
+  if [ "$DRY_RUN" = true ]; then
+    echo "+ sudo sh \"\$docker_script\""
+    echo "+ rm -f \"\$docker_script\""
+  else
+    run_cmd sudo sh "$docker_script"
+    run_cmd rm -f "$docker_script"
+    trap - EXIT
+  fi
   if [ "$DRY_RUN" = false ]; then
     echo "Docker installed successfully."
   fi

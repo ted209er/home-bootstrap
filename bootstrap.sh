@@ -33,6 +33,28 @@ run_cmd() {
   fi
 }
 
+ensure_symlink() {
+  local source=$1
+  local target=$2
+  local current_target
+
+  if [ -L "$target" ]; then
+    current_target="$(readlink "$target")"
+    if [ "$current_target" = "$source" ]; then
+      echo "Symlink already correct: $target -> $source"
+      return
+    fi
+
+    echo "Will replace symlink: $target currently points to $current_target"
+  elif [ -e "$target" ]; then
+    echo "Will replace existing path with symlink: $target"
+  else
+    echo "Will create symlink: $target -> $source"
+  fi
+
+  run_cmd ln -sfn "$source" "$target"
+}
+
 parse_args() {
   while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -78,11 +100,9 @@ else
 fi
 
 # Symlink dotfiles
-echo "Will create/update dotfile symlinks:"
-echo "  $HOME/.zshrc -> $BOOTSTRAP_DIR/.zshrc"
-echo "  $HOME/.p10k.zsh -> $BOOTSTRAP_DIR/.p10k.zsh"
-run_cmd ln -sf "$BOOTSTRAP_DIR/.zshrc" "$HOME/.zshrc"
-run_cmd ln -sf "$BOOTSTRAP_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
+echo "Checking dotfile symlinks..."
+ensure_symlink "$BOOTSTRAP_DIR/.zshrc" "$HOME/.zshrc"
+ensure_symlink "$BOOTSTRAP_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 
 # Installing oh-my-zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then

@@ -80,16 +80,29 @@ fi
 # Add cron job
 
 CRON_JOB="*/15 * * * * source $SCRIPT_DIR/venv/bin/activate && python3 $SCRIPT_DIR/weather_alert.py"
+EXISTING_CRON="$(crontab -l 2>/dev/null || true)"
+WEATHER_CRON_COUNT="$(printf '%s\n' "$EXISTING_CRON" | grep -c 'weather_alert.py' || true)"
+FILTERED_CRON="$(printf '%s\n' "$EXISTING_CRON" | grep -v 'weather_alert.py' || true)"
 
-# Remove duplicate
+# Install or replace the managed cron entry without duplicating it.
 
 echo "Will install cron entry:"
 echo "  $CRON_JOB"
 
-if [ "$DRY_RUN" = true ]; then
+if [ "$WEATHER_CRON_COUNT" -eq 1 ] && printf '%s\n' "$EXISTING_CRON" | grep -Fxq "$CRON_JOB"; then
+	echo "Cron entry already installed; no crontab changes needed."
+elif [ "$DRY_RUN" = true ]; then
+	if [ "$WEATHER_CRON_COUNT" -gt 0 ]; then
+		echo "Will replace $WEATHER_CRON_COUNT existing weather alert cron entr$( [ "$WEATHER_CRON_COUNT" -eq 1 ] && printf 'y' || printf 'ies' )."
+	fi
 	echo "+ (crontab -l 2>/dev/null | grep -v 'weather_alert.py'; echo \"$CRON_JOB\") | crontab -"
 else
-	(crontab -l 2>/dev/null | grep -v 'weather_alert.py'; echo "$CRON_JOB") | crontab -
+	{
+		if [ -n "$FILTERED_CRON" ]; then
+			printf '%s\n' "$FILTERED_CRON"
+		fi
+		printf '%s\n' "$CRON_JOB"
+	} | crontab -
 fi
 
 if [ "$DRY_RUN" = true ]; then

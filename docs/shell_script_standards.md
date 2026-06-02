@@ -20,6 +20,9 @@ hidden directories such as `.devcontainer/`.
   `--dry-run` mode where practical.
 - Dry runs should print the privileged, networked, service, cron, and
   file-mutating commands that would run without executing them.
+- Mutating scripts should be idempotent where practical: skip existing package
+  helpers and cloned plugin directories, avoid duplicate cron or apt source
+  entries, report symlink replacements, and clean temporary installer files.
 
 ## Validation
 
@@ -49,3 +52,5 @@ fresh container rebuild.
   obvious in the script output.
 - Prefer a small `run_cmd` helper for dry-run-aware commands so printed actions
   and executed actions stay aligned.
+- For symlink management, check the current target first and report whether the
+  script will create, keep, or replace the link.
