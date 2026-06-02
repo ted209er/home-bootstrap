@@ -15,6 +15,17 @@ hidden directories such as `.devcontainer/`.
 - Prefer `command -v` over `which`.
 - Use clear function names for repeated behavior.
 - Keep comments helpful and specific to behavior or intent.
+- Prefer ASCII log prefixes through small helpers: `INFO:`, `WARN:`, and
+  `ERROR:`. Avoid emoji or terminal-specific symbols in scripts that may run in
+  minimal shells, cron, containers, or provisioning logs.
+- For scripts that install packages, contact networks, update cron, change
+  services, write symlinks, or change the login shell, provide `--help` and a
+  `--dry-run` mode where practical.
+- Dry runs should print the privileged, networked, service, cron, and
+  file-mutating commands that would run without executing them.
+- Mutating scripts should be idempotent where practical: skip existing package
+  helpers and cloned plugin directories, avoid duplicate cron or apt source
+  entries, report symlink replacements, and clean temporary installer files.
 
 ## Validation
 
@@ -42,3 +53,7 @@ fresh container rebuild.
   format strings with escaped backticks so ShellCheck can parse intent clearly.
 - Keep network, package installation, cron, service, and shell-changing actions
   obvious in the script output.
+- Prefer a small `run_cmd` helper for dry-run-aware commands so printed actions
+  and executed actions stay aligned.
+- For symlink management, check the current target first and report whether the
+  script will create, keep, or replace the link.
