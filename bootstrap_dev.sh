@@ -1,11 +1,9 @@
 #!/bin/bash
 
-
 set -e
 
 # Variables
 REPO_URL="git@github.com:ted209er/dotfiles_bootstrap.git"
-DOTFILES="$HOME/.dotfiles"
 BOOTSTRAP_DIR="$HOME/Repos/dotfiles_bootstrap"
 ZSH_CUSTOM="${HOME}/.oh-my-zsh/custom"
 
@@ -79,10 +77,12 @@ else
   echo "Docker is already installed."
 fi
 
+ZSH_PATH="$(command -v zsh)"
+
 # Set zsh as default shell
-if [ "$SHELL" != "$(which zsh)" ]; then
+if [ "$SHELL" != "$ZSH_PATH" ]; then
   echo "💡 Setting Zsh as the default shell..."
-  chsh -s "$(which zsh)"
+  chsh -s "$ZSH_PATH"
 fi
 
 # Display system info
@@ -91,4 +91,3 @@ neofetch || echo "⚠️ Neofetch not found."
 
 echo "✅ Dev Bootstrap complete. Please restart your terminal or run 'exec zsh' to start using Zsh."
 echo "🚨 You may need to log out/in or reboot to activate Docker group permissions."
-
