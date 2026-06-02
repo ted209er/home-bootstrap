@@ -1,9 +1,22 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 DRY_RUN=false
+
+info() {
+	printf 'INFO: %s\n' "$*"
+}
+
+warn() {
+	printf 'WARN: %s\n' "$*" >&2
+}
+
+die() {
+	printf 'ERROR: %s\n' "$*" >&2
+	exit 1
+}
 
 usage() {
 	cat <<EOF
@@ -40,9 +53,9 @@ parse_args() {
 				exit 0
 				;;
 			*)
-				printf 'Error: unknown option: %s\n\n' "$1" >&2
+				printf '\n' >&2
 				usage >&2
-				exit 1
+				die "Unknown option: $1"
 				;;
 		esac
 		shift
@@ -54,23 +67,22 @@ parse_args "$@"
 # Check to ensure virtual environment is installed
 
 if [ "$DRY_RUN" = false ] && ! python3 -m venv --help >/dev/null 2>&1; then
-	echo "❌ python3-venv is not installed. Run: sudo apt install python3-venv"
-	exit 1
+	die "python3-venv is not installed. Run: sudo apt install python3-venv"
 fi
 
 # Setup virtual environment
 
 if [ ! -d venv ]; then
-	echo "Will create virtualenv: $SCRIPT_DIR/venv"
+	info "Will create virtualenv: $SCRIPT_DIR/venv"
 	run_cmd python3 -m venv venv
 else
-	echo "Virtualenv already exists: $SCRIPT_DIR/venv"
+	info "Virtualenv already exists: $SCRIPT_DIR/venv"
 fi
 
-echo "Will install Python dependencies from: $SCRIPT_DIR/requirements.txt"
+info "Will install Python dependencies from: $SCRIPT_DIR/requirements.txt"
 if [ "$DRY_RUN" = true ]; then
-	echo "+ source ./venv/bin/activate"
-	echo "+ pip install -r requirements.txt"
+	info "+ source ./venv/bin/activate"
+	info "+ pip install -r requirements.txt"
 else
 	# shellcheck disable=SC1091
 	source ./venv/bin/activate
@@ -86,16 +98,20 @@ FILTERED_CRON="$(printf '%s\n' "$EXISTING_CRON" | grep -v 'weather_alert.py' || 
 
 # Install or replace the managed cron entry without duplicating it.
 
-echo "Will install cron entry:"
-echo "  $CRON_JOB"
+info "Will install cron entry:"
+info "  $CRON_JOB"
 
 if [ "$WEATHER_CRON_COUNT" -eq 1 ] && printf '%s\n' "$EXISTING_CRON" | grep -Fxq "$CRON_JOB"; then
-	echo "Cron entry already installed; no crontab changes needed."
+	info "Cron entry already installed; no crontab changes needed."
 elif [ "$DRY_RUN" = true ]; then
 	if [ "$WEATHER_CRON_COUNT" -gt 0 ]; then
-		echo "Will replace $WEATHER_CRON_COUNT existing weather alert cron entr$( [ "$WEATHER_CRON_COUNT" -eq 1 ] && printf 'y' || printf 'ies' )."
+		if [ "$WEATHER_CRON_COUNT" -eq 1 ]; then
+			info "Will replace 1 existing weather alert cron entry."
+		else
+			info "Will replace $WEATHER_CRON_COUNT existing weather alert cron entries."
+		fi
 	fi
-	echo "+ (crontab -l 2>/dev/null | grep -v 'weather_alert.py'; echo \"$CRON_JOB\") | crontab -"
+	info "+ (crontab -l 2>/dev/null | grep -v 'weather_alert.py'; echo \"$CRON_JOB\") | crontab -"
 else
 	{
 		if [ -n "$FILTERED_CRON" ]; then
@@ -106,7 +122,7 @@ else
 fi
 
 if [ "$DRY_RUN" = true ]; then
-	echo "Dry run complete. No changes were made."
+	info "Dry run complete. No changes were made."
 else
-	echo "Weather alert system installed and scheduled every 15 minutes."
+	info "Weather alert system installed and scheduled every 15 minutes."
 fi

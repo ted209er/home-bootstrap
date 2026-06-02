@@ -15,6 +15,9 @@ hidden directories such as `.devcontainer/`.
 - Prefer `command -v` over `which`.
 - Use clear function names for repeated behavior.
 - Keep comments helpful and specific to behavior or intent.
+- Prefer ASCII log prefixes through small helpers: `INFO:`, `WARN:`, and
+  `ERROR:`. Avoid emoji or terminal-specific symbols in scripts that may run in
+  minimal shells, cron, containers, or provisioning logs.
 - For scripts that install packages, contact networks, update cron, change
   services, write symlinks, or change the login shell, provide `--help` and a
   `--dry-run` mode where practical.

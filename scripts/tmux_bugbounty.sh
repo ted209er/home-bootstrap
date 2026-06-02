@@ -2,6 +2,19 @@
 
 set -euo pipefail
 
+info() {
+  printf 'INFO: %s\n' "$*"
+}
+
+warn() {
+  printf 'WARN: %s\n' "$*" >&2
+}
+
+die() {
+  printf 'ERROR: %s\n' "$*" >&2
+  exit 1
+}
+
 usage() {
   printf 'Usage: %s WORKSPACE_PATH\n' "$0" >&2
   printf 'Example: %s ~/recon/test-bounty-1\n' "$0" >&2
@@ -9,8 +22,7 @@ usage() {
 
 require_tmux() {
   if ! command -v tmux >/dev/null 2>&1; then
-    printf 'Error: tmux is not installed or is not on PATH.\n' >&2
-    exit 1
+    die "tmux is not installed or is not on PATH."
   fi
 }
 
@@ -112,7 +124,7 @@ main() {
 
   if [ "$#" -lt 1 ]; then
     usage
-    exit 1
+    die "Workspace path is required."
   fi
 
   require_tmux
@@ -122,10 +134,11 @@ main() {
   session=$(session_name_for_workspace "$workspace")
 
   if tmux has-session -t "$session" 2>/dev/null; then
-    printf 'Attaching to existing session: %s\n' "$session"
+    info "Attaching to existing session: $session"
     exec tmux attach-session -t "$session"
   fi
 
+  info "Creating tmux session: $session"
   create_tmux_workspace "$session" "$workspace"
   exec tmux attach-session -t "$session"
 }

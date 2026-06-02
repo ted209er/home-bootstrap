@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 
-set -u
+set -euo pipefail
+
+info() {
+    printf 'INFO: %s\n' "$*"
+}
+
+warn() {
+    printf 'WARN: %s\n' "$*" >&2
+}
+
+die() {
+    printf 'ERROR: %s\n' "$*" >&2
+    exit 1
+}
 
 repos_root="${REPOS_ROOT:-$HOME/Repos}"
 report_dir="${REPORT_DIR:-reports/repo-audits}"
@@ -148,6 +161,8 @@ if [ -d "$repos_root" ]; then
 
         popd >/dev/null || exit 1
     done < <(find "$repos_root" -mindepth 2 -maxdepth 2 -type d -name .git | sort)
+else
+    warn "Repos root does not exist: $repos_root"
 fi
 
 {
@@ -164,6 +179,6 @@ fi
     else
         printf '%s\n' "${repo_rows[@]}"
     fi
-} > "$report_file"
+} > "$report_file" || die "Failed to write report: $report_file"
 
-printf 'Wrote %s\n' "$report_file"
+info "Wrote $report_file"
