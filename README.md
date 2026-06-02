@@ -32,14 +32,27 @@ Run the base workstation bootstrap:
 ./bootstrap.sh
 ```
 
+Preview the base workstation bootstrap without making changes:
+
+```bash
+./bootstrap.sh --dry-run
+```
+
 Run the fuller development bootstrap:
 
 ```bash
 ./bootstrap_dev.sh
 ```
 
+Preview the fuller development bootstrap without making changes:
+
+```bash
+./bootstrap_dev.sh --dry-run
+```
+
 Both bootstrap scripts perform package installation and other host-level setup.
-Review the script body before running on a new machine.
+Use `--help` to review supported options, and review the script body before
+running on a new machine.
 
 ### Repo Audit
 
@@ -83,8 +96,14 @@ cron:
 scripts/weather-alert/install_weather_alert.sh
 ```
 
+Preview the virtualenv, dependency, and crontab changes first:
+
+```bash
+scripts/weather-alert/install_weather_alert.sh --dry-run
+```
+
 The cron installer mutates the user crontab and installs Python dependencies
-into `scripts/weather-alert/venv`.
+into `scripts/weather-alert/venv`. Use `--help` to review supported options.
 
 ### Shell Script Quality
 
