@@ -10,3 +10,6 @@ __pycache__/
 # Weather alert runtime artifacts
 scripts/weather-alert/venv/
 scripts/weather-alert/weather_alert.log
+
+# Transient ted-os working artifacts
+.ted/
